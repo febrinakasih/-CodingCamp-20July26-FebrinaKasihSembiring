@@ -11,10 +11,21 @@
 <body>
   <div class="container">
     <header>
-      <h1>Expense & Budget Visualizer</h1>
+      <div class="header-top">
+        <h1>Expense & Budget Visualizer</h1>
+        <!-- Challenge 1: Dark Mode Toggle -->
+        <button id="theme-toggle" class="btn-secondary">🌙 Dark Mode</button>
+      </div>
+
       <div class="balance-card">
         <p>TOTAL BALANCE</p>
         <h2 id="total-balance">$0.00</h2>
+        <!-- Challenge 2: Spending Limit Highlight -->
+        <div class="limit-setting">
+          <label for="budget-limit">Set Spending Limit ($):</label>
+          <input type="number" id="budget-limit" placeholder="e.g. 100" min="0">
+        </div>
+        <p id="limit-warning" class="warning-text"></p>
       </div>
     </header>
 
@@ -50,7 +61,15 @@
       <div class="dashboard-grid">
         <!-- List Transaksi -->
         <section class="card list-section">
-          <h3>Transactions</h3>
+          <div class="list-header">
+            <h3>Transactions</h3>
+            <!-- Challenge 3: Sort Transactions -->
+            <select id="sort-order">
+              <option value="newest">Newest First</option>
+              <option value="highest">Highest Amount</option>
+              <option value="lowest">Lowest Amount</option>
+            </select>
+          </div>
           <div class="scrollable-list">
             <ul id="transaction-list"></ul>
           </div>
