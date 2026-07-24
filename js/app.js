@@ -8,6 +8,8 @@ try {
   console.error('Failed to load storage:', e);
 }
 
+let spendingLimit = localStorage.getItem('spendingLimit') || 0;
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
 let myChart = null;
 
 function startApp() {
@@ -15,6 +17,40 @@ function startApp() {
   const itemNameInput = document.getElementById('item-name');
   const amountInput = document.getElementById('amount');
   const categoryInput = document.getElementById('category');
+  const themeToggle = document.getElementById('theme-toggle');
+  const limitInput = document.getElementById('budget-limit');
+  const sortSelect = document.getElementById('sort-order');
+
+  // Load Saved Preferences
+  if (isDarkMode) document.body.classList.add('dark-mode');
+  if (themeToggle) themeToggle.textContent = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+  if (limitInput) limitInput.value = spendingLimit || '';
+
+  // Theme Toggle Event
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', isDarkMode);
+      themeToggle.textContent = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+  }
+
+  // Limit Input Event
+  if (limitInput) {
+    limitInput.addEventListener('input', (e) => {
+      spendingLimit = parseFloat(e.target.value) || 0;
+      localStorage.setItem('spendingLimit', spendingLimit);
+      renderBalance();
+    });
+  }
+
+  // Sort Event
+  if (sortSelect) {
+    sortSelect.addEventListener('change', () => {
+      renderList();
+    });
+  }
 
   updateUI();
 
@@ -75,6 +111,7 @@ function updateUI() {
 
 function renderList() {
   const transactionList = document.getElementById('transaction-list');
+  const sortOrder = document.getElementById('sort-order')?.value || 'newest';
   if (!transactionList) return;
 
   transactionList.innerHTML = '';
@@ -84,7 +121,17 @@ function renderList() {
     return;
   }
 
-  transactions.forEach(t => {
+  // Copy & Sort transactions
+  let sorted = [...transactions];
+  if (sortOrder === 'highest') {
+    sorted.sort((a, b) => b.amount - a.amount);
+  } else if (sortOrder === 'lowest') {
+    sorted.sort((a, b) => a.amount - b.amount);
+  } else {
+    sorted.reverse(); // Newest first
+  }
+
+  sorted.forEach(t => {
     const li = document.createElement('li');
     li.className = 'transaction-item';
     li.innerHTML = `
@@ -101,10 +148,21 @@ function renderList() {
 
 function renderBalance() {
   const totalBalanceEl = document.getElementById('total-balance');
+  const balanceCard = document.querySelector('.balance-card');
+  const limitWarning = document.getElementById('limit-warning');
   if (!totalBalanceEl) return;
 
   const total = transactions.reduce((acc, t) => acc + t.amount, 0);
   totalBalanceEl.textContent = `$${total.toFixed(2)}`;
+
+  // Limit Check
+  if (spendingLimit > 0 && total > spendingLimit) {
+    balanceCard.classList.add('over-limit');
+    if (limitWarning) limitWarning.textContent = `⚠️ Warning: Spending exceeded limit of $${spendingLimit.toFixed(2)}!`;
+  } else {
+    balanceCard.classList.remove('over-limit');
+    if (limitWarning) limitWarning.textContent = '';
+  }
 }
 
 function renderChart() {
