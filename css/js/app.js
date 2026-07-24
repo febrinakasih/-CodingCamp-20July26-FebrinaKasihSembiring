@@ -11,16 +11,17 @@ try {
 
 let myChart = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+// Fungsi untuk menjalankan app setelah DOM & Chart.js siap
+function startApp() {
   const form = document.getElementById('transaction-form');
   const itemNameInput = document.getElementById('item-name');
   const amountInput = document.getElementById('amount');
   const categoryInput = document.getElementById('category');
 
-  // Load initial view
+  // Render awal
   updateUI();
 
-  // Form submit handler
+  // Handle Form Submit
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -48,7 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
       form.reset();
     });
   }
-});
+}
+
+// Pastikan halaman dan library eksternal siap
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
 
 // Save to LocalStorage
 function saveData() {
@@ -112,16 +120,29 @@ function renderBalance() {
 // Render Chart
 function renderChart() {
   const canvas = document.getElementById('spendingChart');
-  if (!canvas || typeof Chart === 'undefined') return;
+  if (!canvas) return;
+
+  // Cek apakah library Chart.js sudah termuat
+  if (typeof Chart === 'undefined') {
+    setTimeout(renderChart, 200); // Tunggu sebentar jika CDN agak lambat
+    return;
+  }
 
   const ctx = canvas.getContext('2d');
   const categories = ['Food', 'Transport', 'Fun'];
   
-  const dataSums = categories.map(cat => {
+  let dataSums = categories.map(cat => {
     return transactions
       .filter(t => t.category === cat)
       .reduce((sum, t) => sum + t.amount, 0);
   });
+
+  // Jika belum ada data sama sekali, tampilkan placeholder chart agar tidak kosong
+  const hasData = dataSums.some(sum => sum > 0);
+  const displayData = hasData ? dataSums : [1, 1, 1]; // Placeholder proporsi seimbang
+  const displayColors = hasData 
+    ? ['#28a745', '#007bff', '#fd7e14'] 
+    : ['#e0e0e0', '#d6d6d6', '#cccccc']; // Warna abu-abu jika belum ada transaksi
 
   if (myChart) {
     myChart.destroy();
@@ -132,8 +153,8 @@ function renderChart() {
     data: {
       labels: categories,
       datasets: [{
-        data: dataSums,
-        backgroundColor: ['#28a745', '#007bff', '#fd7e14']
+        data: displayData,
+        backgroundColor: displayColors
       }]
     },
     options: {
@@ -142,6 +163,9 @@ function renderChart() {
       plugins: {
         legend: {
           position: 'bottom'
+        },
+        tooltip: {
+          enabled: hasData // Sembunyikan tooltip kalau masih placeholder
         }
       }
     }
