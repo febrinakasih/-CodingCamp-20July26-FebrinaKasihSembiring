@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 body {
@@ -11,19 +12,63 @@ body {
   padding: 20px;
 }
 
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body.dark-mode .card,
+body.dark-mode .balance-card {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode input,
+body.dark-mode select {
+  background-color: #2d2d2d;
+  color: #fff;
+  border-color: #444;
+}
+
+body.dark-mode .transaction-item {
+  border-bottom-color: #333;
+}
+
 .container {
   max-width: 900px;
   margin: 0 auto;
 }
 
 header {
-  text-align: center;
   margin-bottom: 25px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 header h1 {
   font-size: 1.8rem;
-  margin-bottom: 15px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid #007bff;
+  color: #007bff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+body.dark-mode .btn-secondary {
+  border-color: #00d2ff;
+  color: #00d2ff;
 }
 
 .balance-card {
@@ -31,8 +76,7 @@ header h1 {
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  display: inline-block;
-  min-width: 250px;
+  text-align: center;
 }
 
 .balance-card p {
@@ -42,10 +86,41 @@ header h1 {
   letter-spacing: 1px;
 }
 
+body.dark-mode .balance-card p {
+  color: #aaa;
+}
+
 .balance-card h2 {
   font-size: 2.2rem;
   color: #007bff;
-  margin-top: 5px;
+  margin: 5px 0 15px 0;
+}
+
+.limit-setting {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.limit-setting input {
+  width: 100px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.warning-text {
+  color: #ff4d4d !important;
+  font-weight: bold !important;
+  margin-top: 8px;
+}
+
+/* Highlight Over Limit Class */
+.balance-card.over-limit h2 {
+  color: #ff4d4d;
 }
 
 .card {
@@ -56,9 +131,16 @@ header h1 {
   margin-bottom: 25px;
 }
 
-.card h3 {
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
-  font-size: 1.2rem;
+}
+
+.list-header select {
+  padding: 5px;
+  border-radius: 4px;
 }
 
 .form-group {
